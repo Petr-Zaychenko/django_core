@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить файл{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'add_file' %}" enctype="multipart/form-data" class="col-md-6 mx-auto">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Описание файла</label>
+            <input name="text" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text">Добавьте описание для вашего файла</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="formFileSm" class="form-label">Загрузите файл</label>
+            <input name="file" class="form-control form-control-sm" id="formFileSm" type="file">
+        </div>
+
+        <button type="submit" class="btn btn-primary" name="save">Добавить</button>
+    </form>
+{% endblock %}

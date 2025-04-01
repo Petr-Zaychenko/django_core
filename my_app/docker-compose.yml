@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:17.0
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${HOST_PORT}:${DB_PORT}"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  my_app:
+    image: hey_docker
+    build: .
+    container_name: hey_docker
+    ports:
+      - "${APP_PORT}:${DOCKER_PORT}"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+    volumes:
+      - static_volume:/hey_docker/static
+      - media_volume:/hey_docker/media
+      - .:/hey_docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    command: python manage.py runserver 0.0.0.0:${DOCKER_PORT}
+
+
+
+
+
+volumes:
+  static_volume:
+  media_volume:
+  postgres_data:
